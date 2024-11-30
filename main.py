@@ -3,7 +3,7 @@ from constants import *
 import player
 import asteroid
 import astroidfield
-
+import shot
 def main():
     pygame.init()
     #Draw the screen
@@ -17,9 +17,11 @@ def main():
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     astroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
     asteroid.Asteroid.containers = (updateable,drawable,astroids)
     player.Player.containers = (updateable,drawable)
     astroidfield.AsteroidField.containers = (updateable)
+    shot.shot.containers = (shots,drawable,updateable)
     player1 = player.Player(player_start_x,player_start_y)
     astroidfld = astroidfield.AsteroidField()
     print("Starting asteroids!")
@@ -37,6 +39,16 @@ def main():
 
         for object in updateable:
             object.update(dt)
+        
+        for object in astroids:
+            if object.collision(player1):
+                print("Game over!")
+                return
+        for object in astroids:
+            for bullet in shots:
+                if object.collision(bullet):
+                    object.split()
+                    bullet.kill()
         
         for object in drawable:
             object.draw(screen)
